@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Visualiza funciones como transformaciones de la recta real y compón mapas x → g(x) → f(g(x))." />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Function Mapper</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">FUNCTION MAPPER</p>
+        <h1>Visualiza funciones como transformaciones.</h1>
+        <p class="lede">
+          En lugar de dibujar sólo <span class="math">y = f(x)</span>, observa directamente
+          <span class="math">x ↦ f(x)</span>. Activa composición para seguir
+          <span class="math">x → g(x) → f(g(x))</span>.
+        </p>
+      </div>
+      <a class="github-link" href="https://github.com/heri-espino/functions" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </header>
+
+    <section class="workspace">
+      <aside class="controls" aria-label="Controles de la función">
+        <div class="control-block">
+          <label for="function-f">f(x)</label>
+          <input id="function-f" class="expression-input" value="x^2" autocomplete="off" spellcheck="false" />
+          <p class="hint">Ejemplos: <code>x^2</code>, <code>sin(x)</code>, <code>exp(x)</code>, <code>1/x</code></p>
+        </div>
+
+        <div id="g-control" class="control-block hidden">
+          <label for="function-g">g(x)</label>
+          <input id="function-g" class="expression-input" value="x + 1" autocomplete="off" spellcheck="false" />
+        </div>
+
+        <div class="preset-row" aria-label="Funciones de ejemplo">
+          <button type="button" class="preset" data-expression="2*x">2x</button>
+          <button type="button" class="preset" data-expression="x^2">x²</button>
+          <button type="button" class="preset" data-expression="x^3">x³</button>
+          <button type="button" class="preset" data-expression="sin(x)">sin x</button>
+          <button type="button" class="preset" data-expression="exp(x)">eˣ</button>
+          <button type="button" class="preset" data-expression="1/x">1/x</button>
+        </div>
+
+        <div class="grid-two">
+          <div class="control-block compact">
+            <label for="x-min">x mínimo</label>
+            <input id="x-min" type="number" step="0.5" value="-3" />
+          </div>
+          <div class="control-block compact">
+            <label for="x-max">x máximo</label>
+            <input id="x-max" type="number" step="0.5" value="3" />
+          </div>
+          <div class="control-block compact">
+            <label for="point-count">Puntos</label>
+            <input id="point-count" type="number" min="3" max="61" value="15" />
+          </div>
+          <label class="toggle-row" for="compose">
+            <input id="compose" type="checkbox" />
+            <span class="toggle-ui" aria-hidden="true"></span>
+            <span>Componer con g</span>
+          </label>
+        </div>
+
+        <div class="control-block">
+          <div class="range-heading">
+            <label for="morph">Identidad → función</label>
+            <output id="morph-value" for="morph">100%</output>
+          </div>
+          <input id="morph" type="range" min="0" max="100" value="100" />
+          <p class="hint">0% muestra <span class="math">x ↦ x</span>; 100% muestra la transformación completa.</p>
+        </div>
+
+        <div id="error-box" class="error-box hidden" role="alert"></div>
+      </aside>
+
+      <section class="visual-panel" aria-label="Visualización de la función">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">MAPA DE PUNTOS</p>
+            <h2 id="map-title">x ↦ f(x)</h2>
+          </div>
+          <div id="status" class="status">Cargando evaluador…</div>
+        </div>
+
+        <div class="canvas-wrap">
+          <svg id="mapping-svg" viewBox="0 0 900 430" role="img" aria-label="Diagrama de mapeo de la función"></svg>
+        </div>
+
+        <div class="metrics" aria-live="polite">
+          <article class="metric">
+            <span>Punto seleccionado</span>
+            <strong id="metric-x">x = 0</strong>
+          </article>
+          <article class="metric">
+            <span>Imagen</span>
+            <strong id="metric-y">f(x) = 0</strong>
+          </article>
+          <article class="metric">
+            <span>Estiramiento local</span>
+            <strong id="metric-d">|f′(x)| ≈ 0</strong>
+            <small id="metric-orientation">orientación preservada</small>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="explanation">
+      <article>
+        <p class="panel-kicker">LECTURA GEOMÉTRICA</p>
+        <h2>La derivada mide cuánto se separan localmente los puntos.</h2>
+        <p>
+          Para un desplazamiento pequeño <span class="math">dx</span>,
+          <span class="math">df ≈ f′(x) dx</span>. Por eso
+          <span class="math">|f′(x)|</span> funciona como factor local de estiramiento.
+        </p>
+      </article>
+      <div class="formula-card">
+        <span>Composición</span>
+        <strong>|(f ∘ g)′(x)| = |f′(g(x))| · |g′(x)|</strong>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
