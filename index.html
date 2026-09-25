@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Visualiza funciones como transformaciones de la recta real y compón mapas x → g(x) → f(g(x))." />
+  <meta name="description" content="Visualiza funciones como transformaciones de la recta real y sigue composiciones x → f(x) → g(f(x)) → …" />
   <meta name="theme-color" content="#0b1020" />
   <title>Function Mapper</title>
   <link rel="stylesheet" href="style.css" />
@@ -13,95 +13,154 @@
     <header class="hero">
       <div>
         <p class="eyebrow">FUNCTION MAPPER</p>
-        <h1>Visualiza funciones como transformaciones.</h1>
+        <h1>Funciones como transformaciones.</h1>
         <p class="lede">
-          En lugar de dibujar sólo <span class="math">y = f(x)</span>, observa directamente
-          <span class="math">x ↦ f(x)</span>. Activa composición para seguir
-          <span class="math">x → g(x) → f(g(x))</span>.
+          Sigue puntos de la recta real a través de una cadena
+          <span class="math">x → f(x) → g(f(x)) → …</span>, en lugar de ver sólo
+          <span class="math">y = f(x)</span>.
         </p>
       </div>
       <a class="github-link" href="https://github.com/heri-espino/functions" target="_blank" rel="noreferrer">GitHub ↗</a>
     </header>
 
     <section class="workspace">
-      <aside class="controls" aria-label="Controles de la función">
-        <div class="control-block">
-          <label for="function-f">f(x)</label>
-          <input id="function-f" class="expression-input" value="x^2" autocomplete="off" spellcheck="false" />
-          <p class="hint">Ejemplos: <code>x^2</code>, <code>sin(x)</code>, <code>exp(x)</code>, <code>1/x</code></p>
-        </div>
-
-        <div id="g-control" class="control-block hidden">
-          <label for="function-g">g(x)</label>
-          <input id="function-g" class="expression-input" value="x + 1" autocomplete="off" spellcheck="false" />
-        </div>
-
-        <div class="preset-row" aria-label="Funciones de ejemplo">
-          <button type="button" class="preset" data-expression="2*x">2x</button>
-          <button type="button" class="preset" data-expression="x^2">x²</button>
-          <button type="button" class="preset" data-expression="x^3">x³</button>
-          <button type="button" class="preset" data-expression="sin(x)">sin x</button>
-          <button type="button" class="preset" data-expression="exp(x)">eˣ</button>
-          <button type="button" class="preset" data-expression="1/x">1/x</button>
-        </div>
-
-        <div class="grid-two">
-          <div class="control-block compact">
-            <label for="x-min">x mínimo</label>
-            <input id="x-min" type="number" step="0.5" value="-3" />
+      <aside class="controls" aria-label="Controles de las funciones">
+        <section class="control-section">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">EXPRESIONES</p>
+              <h2>Funciones</h2>
+            </div>
+            <button id="add-function" class="icon-button" type="button" aria-label="Agregar función" title="Agregar función">+</button>
           </div>
-          <div class="control-block compact">
-            <label for="x-max">x máximo</label>
-            <input id="x-max" type="number" step="0.5" value="3" />
+
+          <div id="function-list" class="function-list" aria-live="polite"></div>
+          <p class="hint">
+            Sintaxis: <code>x^2</code>, <code>sin(x)</code>, <code>ln(x)</code>,
+            <code>exp(x)</code>, <code>abs(x)</code>, <code>1/x</code>.
+          </p>
+        </section>
+
+        <section class="control-section">
+          <p class="section-kicker">DOMINIO VISIBLE</p>
+          <div class="grid-two">
+            <div class="control-block compact">
+              <label for="x-min">x mínimo</label>
+              <input id="x-min" type="number" step="0.1" value="-1" />
+            </div>
+            <div class="control-block compact">
+              <label for="x-max">x máximo</label>
+              <input id="x-max" type="number" step="0.1" value="1" />
+            </div>
           </div>
-          <div class="control-block compact">
-            <label for="point-count">Puntos</label>
-            <input id="point-count" type="number" min="3" max="61" value="15" />
-          </div>
-          <label class="toggle-row" for="compose">
-            <input id="compose" type="checkbox" />
+
+          <label class="toggle-row" for="lock-xlim">
+            <input id="lock-xlim" type="checkbox" />
             <span class="toggle-ui" aria-hidden="true"></span>
-            <span>Componer con g</span>
+            <span>Mismo xlim en todos los ejes</span>
           </label>
-        </div>
+          <p class="hint">
+            Desactivado: cada imagen usa su propio rango. Activado: todos los ejes conservan exactamente el rango inicial.
+          </p>
+        </section>
 
-        <div class="control-block">
-          <div class="range-heading">
-            <label for="morph">Identidad → función</label>
-            <output id="morph-value" for="morph">100%</output>
+        <section class="control-section">
+          <p class="section-kicker">MUESTREO</p>
+          <div class="grid-two">
+            <div class="control-block compact">
+              <label for="point-count">Puntos uniformes</label>
+              <input id="point-count" type="number" min="2" max="101" value="15" />
+            </div>
+            <div class="control-block compact">
+              <label for="extra-points">Puntos extra</label>
+              <input id="extra-points" type="text" inputmode="decimal" placeholder="-0.75, 0.2, 0.93" />
+            </div>
           </div>
-          <input id="morph" type="range" min="0" max="100" value="100" />
-          <p class="hint">0% muestra <span class="math">x ↦ x</span>; 100% muestra la transformación completa.</p>
-        </div>
+          <div class="inline-actions">
+            <button id="clear-extra" class="secondary-button" type="button">Limpiar extras</button>
+            <span class="hint inline-hint">También puedes hacer clic sobre el primer eje para añadir un punto.</span>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <p class="section-kicker">APARIENCIA</p>
+          <div class="grid-two">
+            <div class="control-block compact">
+              <label for="color-mode">Color</label>
+              <select id="color-mode">
+                <option value="stage">Por etapa</option>
+                <option value="gradient">Gradiente según x</option>
+              </select>
+            </div>
+            <div class="control-block compact">
+              <label for="palette">Paleta continua</label>
+              <select id="palette">
+                <option value="viridis">Viridis</option>
+                <option value="plasma">Plasma</option>
+                <option value="inferno">Inferno</option>
+                <option value="magma">Magma</option>
+                <option value="cividis">Cividis</option>
+                <option value="turbo">Turbo</option>
+              </select>
+            </div>
+          </div>
+          <div id="palette-preview" class="palette-preview" aria-label="Vista previa de la paleta"></div>
+        </section>
+
+        <section class="control-section animation-controls">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="section-kicker">ANIMACIÓN</p>
+              <h2>Recorrido de la composición</h2>
+            </div>
+            <button id="play-animation" class="play-button" type="button">▶ Reproducir</button>
+          </div>
+          <div class="range-heading">
+            <label for="animation-progress">Progreso</label>
+            <output id="animation-value" for="animation-progress">0%</output>
+          </div>
+          <input id="animation-progress" type="range" min="0" max="1000" value="0" />
+          <div class="animation-meta">
+            <span id="animation-stage">x</span>
+            <label for="animation-speed">Velocidad
+              <select id="animation-speed">
+                <option value="0.5">0.5×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.5">1.5×</option>
+                <option value="2">2×</option>
+              </select>
+            </label>
+          </div>
+        </section>
 
         <div id="error-box" class="error-box hidden" role="alert"></div>
       </aside>
 
-      <section class="visual-panel" aria-label="Visualización de la función">
+      <section class="visual-panel" aria-label="Visualización de la composición">
         <div class="panel-head">
           <div>
             <p class="panel-kicker">MAPA DE PUNTOS</p>
-            <h2 id="map-title">x ↦ f(x)</h2>
+            <h2 id="map-title">x → f(x) → g(f(x))</h2>
           </div>
           <div id="status" class="status">Cargando evaluador…</div>
         </div>
 
         <div class="canvas-wrap">
-          <svg id="mapping-svg" viewBox="0 0 900 430" role="img" aria-label="Diagrama de mapeo de la función"></svg>
+          <svg id="mapping-svg" viewBox="0 0 960 520" role="img" aria-label="Diagrama de mapeo de funciones"></svg>
         </div>
 
         <div class="metrics" aria-live="polite">
           <article class="metric">
-            <span>Punto seleccionado</span>
+            <span>Punto inicial</span>
             <strong id="metric-x">x = 0</strong>
           </article>
           <article class="metric">
-            <span>Imagen</span>
-            <strong id="metric-y">f(x) = 0</strong>
+            <span>Imagen final</span>
+            <strong id="metric-y">g(f(x)) = 0</strong>
           </article>
           <article class="metric">
-            <span>Estiramiento local</span>
-            <strong id="metric-d">|f′(x)| ≈ 0</strong>
+            <span>Estiramiento total</span>
+            <strong id="metric-d">|(g∘f)′(x)| ≈ 0</strong>
             <small id="metric-orientation">orientación preservada</small>
           </article>
         </div>
@@ -111,16 +170,15 @@
     <section class="explanation">
       <article>
         <p class="panel-kicker">LECTURA GEOMÉTRICA</p>
-        <h2>La derivada mide cuánto se separan localmente los puntos.</h2>
+        <h2>La composición es una secuencia de deformaciones.</h2>
         <p>
-          Para un desplazamiento pequeño <span class="math">dx</span>,
-          <span class="math">df ≈ f′(x) dx</span>. Por eso
-          <span class="math">|f′(x)|</span> funciona como factor local de estiramiento.
+          Cada recta muestra el estado actual de los mismos puntos. Las líneas rectas conectan una entrada con su imagen.
+          Con gradiente, el color identifica la trayectoria de un mismo punto a través de todas las funciones.
         </p>
       </article>
       <div class="formula-card">
-        <span>Composición</span>
-        <strong>|(f ∘ g)′(x)| = |f′(g(x))| · |g′(x)|</strong>
+        <span>Cadena de funciones</span>
+        <strong>x → f(x) → g(f(x)) → h(g(f(x))) → …</strong>
       </div>
     </section>
   </main>
