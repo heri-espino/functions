@@ -1,58 +1,73 @@
 # Function Mapper
 
-A small static web app for visualizing real-valued functions as **maps of the real line** rather than only as Cartesian curves.
+A static web app for visualizing real-valued functions as **maps of the real line** rather than only as Cartesian curves.
 
-Instead of starting from
-
-```text
-y = f(x)
-```
-
-the app emphasizes
+The central representation is a chain of transformations:
 
 ```text
-x  →  f(x)
+x  →  f(x)  →  g(f(x))  →  h(g(f(x)))  →  …
 ```
 
-and, for composition,
+Each horizontal axis is a copy of the real line at one stage of the composition. The same sampled points are followed from one stage to the next.
+
+## Features
+
+- Desmos-like expression rows for `f(x)`, `g(x)`, `h(x)`, etc.
+- Add or remove functions to build a composition chain.
+- Set the visible range of the initial real line with `x min` and `x max`.
+- Optional **same xlim on every axis** mode.
+  - Off: each image axis auto-scales to its own values.
+  - On: every stage uses the initial xlim exactly.
+- Straight line segments connect every point to its image.
+- Uniform point sampling with configurable density.
+- Arbitrary extra points:
+  - type coordinates such as `-0.75, 0.2, 0.93`;
+  - or click directly on the first axis.
+- Two coloring modes:
+  - stage colors;
+  - continuous color by initial `x`.
+- Continuous palettes: Viridis, Plasma, Inferno, Magma, Cividis, and Turbo.
+- Composition animation:
+  - `x → f(x)`;
+  - then `f(x) → g(f(x))`;
+  - then the next function, and so on.
+- Scrubbable animation timeline and playback speed.
+- Select an initial point to inspect:
+  - its starting value;
+  - its final image;
+  - the numerical derivative of the total composition;
+  - whether local orientation is preserved or reversed.
+- Expressions support Math.js syntax and `ln(x)` is accepted as a convenience alias for the natural logarithm.
+
+## Mathematical interpretation
+
+For one function,
 
 ```text
-x  →  g(x)  →  f(g(x))
+x → f(x)
 ```
 
-## Why
-
-This representation makes several ideas visually explicit:
-
-- stretching and contraction of the real line;
-- orientation reversal when the derivative is negative;
-- local stretching through `|f'(x)|`;
-- composition as successive transformations;
-- the chain rule as multiplication of local scale factors.
-
-For small `dx`,
+a small displacement satisfies
 
 ```text
 df ≈ f'(x) dx
 ```
 
-so `|f'(x)|` can be interpreted as a local stretching factor.
+so `|f'(x)|` is the local stretching factor.
 
-For a composition,
+For a chain
 
 ```text
-|(f ∘ g)'(x)| = |f'(g(x))| |g'(x)|
+x → f(x) → g(f(x))
 ```
 
-## Features
+the total local stretching is
 
-- Enter expressions such as `x^2`, `sin(x)`, `exp(x)`, `abs(x)`, or `1/x`.
-- Choose the input interval and number of sampled points.
-- Click an input point to inspect its image and local derivative.
-- Morph continuously from the identity map `x → x` to the selected function.
-- Enable composition to visualize `x → g(x) → f(g(x))`.
-- Handles non-finite points without breaking the diagram.
-- Responsive, dependency-light, and fully static.
+```text
+|(g ∘ f)'(x)| = |g'(f(x))| |f'(x)|
+```
+
+and the same interpretation extends to longer compositions.
 
 ## Stack
 
@@ -66,9 +81,7 @@ There is no framework, backend, build step, package manager, or database.
 
 ## Run locally
 
-Because Math.js is loaded as an ES module, serve the directory with a small local HTTP server rather than opening `index.html` directly.
-
-With Python:
+Serve the repository over HTTP so the ES module can load correctly:
 
 ```bash
 python -m http.server 8000
@@ -82,7 +95,7 @@ http://localhost:8000
 
 ## GitHub Pages
 
-This repository is ready to be served directly from `main`.
+The repository is designed to be served directly from `main`.
 
 In GitHub:
 
@@ -91,7 +104,7 @@ In GitHub:
 3. Select **main** and **/(root)**.
 4. Save.
 
-The site will then be available at:
+The site URL is:
 
 ```text
 https://heri-espino.github.io/functions/
@@ -107,7 +120,3 @@ functions/
 ├── .nojekyll
 └── README.md
 ```
-
-## Possible next steps
-
-Natural extensions include a conventional Cartesian graph mode, draggable input points, animation of point flow, color-coding by derivative magnitude, inverse-function visualization, and two-dimensional maps where the derivative becomes a Jacobian matrix.
