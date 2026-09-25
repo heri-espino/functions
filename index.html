@@ -23,6 +23,16 @@
       <a class="github-link" href="https://github.com/heri-espino/functions" target="_blank" rel="noreferrer">GitHub ↗</a>
     </header>
 
+    <nav class="mode-switch" role="tablist" aria-label="Modo de visualización">
+      <button id="tab-functions" class="mode-tab active" type="button" role="tab" aria-selected="true" aria-controls="functions-mode" data-mode="functions">
+        Funciones R → R
+      </button>
+      <button id="tab-linear" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="linear-mode" data-mode="linear">
+        Transformaciones lineales
+      </button>
+    </nav>
+
+    <section id="functions-mode" class="mode-section" role="tabpanel" aria-labelledby="tab-functions">
     <section class="workspace">
       <aside class="controls" aria-label="Controles de las funciones">
         <section class="control-section">
@@ -180,6 +190,120 @@
         <span>Cadena de funciones</span>
         <strong>x → f(x) → g(f(x)) → h(g(f(x))) → …</strong>
       </div>
+    </section>
+
+    </section>
+
+    <section id="linear-mode" class="mode-section hidden" role="tabpanel" aria-labelledby="tab-linear">
+      <section class="workspace linear-workspace">
+        <aside class="controls" aria-label="Controles de transformación lineal">
+          <section class="control-section">
+            <p class="section-kicker">ESPACIO VECTORIAL</p>
+            <div class="grid-two">
+              <div class="control-block compact">
+                <label for="linear-dimension">Dimensión</label>
+                <select id="linear-dimension">
+                  <option value="1">R¹</option>
+                  <option value="2" selected>R²</option>
+                  <option value="3">R³</option>
+                </select>
+              </div>
+              <div class="control-block compact">
+                <label for="linear-preset">Matriz ejemplo</label>
+                <select id="linear-preset"></select>
+              </div>
+            </div>
+            <p class="hint">Escoge una matriz conocida o edita directamente cualquier entrada de A.</p>
+          </section>
+
+          <section class="control-section">
+            <div class="section-heading compact-heading">
+              <div>
+                <p class="section-kicker">MATRIZ</p>
+                <h2>A : Rⁿ → Rⁿ</h2>
+              </div>
+              <button id="linear-reset" class="secondary-button" type="button">Restablecer</button>
+            </div>
+            <div id="linear-matrix" class="matrix-editor" aria-label="Entradas de la matriz A"></div>
+            <p class="hint">Las celdas aceptan números y expresiones como <code>sqrt(2)/2</code>, <code>cos(pi/4)</code> o <code>-sin(pi/6)</code>.</p>
+
+            <div id="linear-parameter-row" class="parameter-row hidden">
+              <label id="linear-parameter-label" for="linear-parameter">Parámetro</label>
+              <input id="linear-parameter" type="number" step="0.1" value="1" />
+            </div>
+          </section>
+
+          <section class="control-section">
+            <p class="section-kicker">CAPAS</p>
+            <label class="toggle-row" for="linear-show-grid">
+              <input id="linear-show-grid" type="checkbox" checked />
+              <span class="toggle-ui" aria-hidden="true"></span>
+              <span>Mostrar rejilla / cubo</span>
+            </label>
+            <label class="toggle-row" for="linear-show-basis">
+              <input id="linear-show-basis" type="checkbox" checked />
+              <span class="toggle-ui" aria-hidden="true"></span>
+              <span>Mostrar vectores base</span>
+            </label>
+            <label class="toggle-row" for="linear-show-eigen">
+              <input id="linear-show-eigen" type="checkbox" />
+              <span class="toggle-ui" aria-hidden="true"></span>
+              <span>Mostrar eigenvectores reales</span>
+            </label>
+            <div id="linear-eigen-info" class="eigen-info">Activa los eigenvectores para ver direcciones invariantes.</div>
+          </section>
+
+          <div id="linear-error-box" class="error-box hidden" role="alert"></div>
+        </aside>
+
+        <section class="visual-panel" aria-label="Visualización de transformación lineal">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">TRANSFORMACIÓN LINEAL</p>
+              <h2 id="linear-title">A : R² → R²</h2>
+            </div>
+            <div id="linear-status" class="status">Listo</div>
+          </div>
+
+          <div class="linear-canvas-wrap">
+            <svg id="linear-svg" viewBox="0 0 1000 560" role="img" aria-label="Visualización de la transformación lineal"></svg>
+          </div>
+
+          <div class="metrics linear-metrics" aria-live="polite">
+            <article class="metric">
+              <span>Determinante</span>
+              <strong id="linear-det">det(A) = 1</strong>
+            </article>
+            <article class="metric">
+              <span>Traza</span>
+              <strong id="linear-trace">tr(A) = 2</strong>
+            </article>
+            <article class="metric">
+              <span>Rango</span>
+              <strong id="linear-rank">rank(A) = 2</strong>
+            </article>
+            <article class="metric">
+              <span>Eigenvalores reales</span>
+              <strong id="linear-eigenvalues">λ = 1, 1</strong>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="explanation">
+        <article>
+          <p class="panel-kicker">LECTURA GEOMÉTRICA</p>
+          <h2>Una matriz transforma todo el espacio de forma coherente.</h2>
+          <p>
+            Las columnas de A son las imágenes de los vectores base. Un eigenvector conserva su dirección:
+            <span class="math">Av = λv</span>. En R² se transforma la rejilla; en R³, un cubo se convierte en un paralelepípedo.
+          </p>
+        </article>
+        <div class="formula-card">
+          <span>Transformación lineal</span>
+          <strong>T(x) = Ax, &nbsp;&nbsp; Av = λv</strong>
+        </div>
+      </section>
     </section>
   </main>
 
