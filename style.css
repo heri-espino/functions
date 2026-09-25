@@ -593,3 +593,195 @@ input[type="range"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* Modes                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.mode-switch {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0 0 18px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(15, 21, 36, 0.9);
+}
+
+.mode-tab {
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 750;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.mode-tab:hover {
+  color: var(--text);
+}
+
+.mode-tab.active {
+  background: var(--panel-2);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.mode-tab:focus-visible {
+  outline: 3px solid rgba(123, 162, 255, 0.25);
+  outline-offset: 2px;
+}
+
+.mode-section {
+  min-width: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Linear transformations                                                      */
+/* -------------------------------------------------------------------------- */
+
+.linear-workspace {
+  grid-template-columns: minmax(320px, 410px) minmax(0, 1fr);
+}
+
+.matrix-editor {
+  display: grid;
+  gap: 8px;
+  justify-content: start;
+  margin: 4px 0 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-3);
+  position: relative;
+}
+
+.matrix-editor::before,
+.matrix-editor::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 7px;
+  border-top: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.matrix-editor::before {
+  left: 5px;
+  border-left: 1.5px solid var(--muted);
+}
+
+.matrix-editor::after {
+  right: 5px;
+  border-right: 1.5px solid var(--muted);
+}
+
+.matrix-cell {
+  width: 76px !important;
+  min-height: 42px !important;
+  border-radius: 8px !important;
+  padding: 8px 7px !important;
+  text-align: center;
+  font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif !important;
+  font-size: 1rem;
+}
+
+.parameter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.parameter-row label {
+  color: #dce5f6;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.eigen-info {
+  margin-top: 12px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 11px;
+  background: var(--panel-3);
+  color: var(--muted);
+  font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.linear-canvas-wrap {
+  width: 100%;
+  overflow-x: auto;
+  padding: 8px 8px 2px;
+}
+
+#linear-svg {
+  display: block;
+  width: 100%;
+  min-width: 760px;
+  height: auto;
+}
+
+.linear-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.linear-metrics .metric strong {
+  font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+}
+
+.linear-panel-label {
+  fill: #dfe7f6;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.linear-math-label {
+  fill: #dfe7f6;
+  font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+  font-size: 15px;
+}
+
+@media (max-width: 980px) {
+  .linear-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .linear-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mode-switch {
+    display: flex;
+    width: 100%;
+  }
+
+  .mode-tab {
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .linear-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .matrix-cell {
+    width: 66px !important;
+  }
+}
