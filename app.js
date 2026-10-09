@@ -1823,20 +1823,29 @@ function renderLinear() {
 }
 
 function switchMode(mode) {
-  const linearActive = mode === "linear";
-  linearUi.mode.classList.toggle("hidden", !linearActive);
-  linearUi.functionsMode.classList.toggle("hidden", linearActive);
-  linearUi.tabLinear.classList.toggle("active", linearActive);
-  linearUi.tabFunctions.classList.toggle("active", !linearActive);
-  linearUi.tabLinear.setAttribute("aria-selected", linearActive ? "true" : "false");
-  linearUi.tabFunctions.setAttribute("aria-selected", linearActive ? "false" : "true");
+  const panels = {
+    functions: linearUi.functionsMode,
+    linear: linearUi.mode,
+    image: document.getElementById("image-mode"),
+  };
+  const tabs = {
+    functions: linearUi.tabFunctions,
+    linear: linearUi.tabLinear,
+    image: document.getElementById("tab-image"),
+  };
 
-  if (linearActive) {
-    stopAnimation(false);
-    renderLinear();
-  } else if (math) {
-    render();
-  }
+  if (!Object.prototype.hasOwnProperty.call(panels, mode)) return;
+
+  Object.entries(panels).forEach(function ([name, panel]) {
+    panel.classList.toggle("hidden", name !== mode);
+    tabs[name].classList.toggle("active", name === mode);
+    tabs[name].setAttribute("aria-selected", name === mode ? "true" : "false");
+  });
+
+  stopAnimation(false);
+  if (mode === "functions" && math) render();
+  if (mode === "linear") renderLinear();
+  if (mode === "image") window.dispatchEvent(new Event("functionmapper:image-visible"));
 }
 
 function setupLinearExplorer() {
@@ -1844,6 +1853,7 @@ function setupLinearExplorer() {
 
   linearUi.tabFunctions.addEventListener("click", function () { switchMode("functions"); });
   linearUi.tabLinear.addEventListener("click", function () { switchMode("linear"); });
+  document.getElementById("tab-image").addEventListener("click", function () { switchMode("image"); });
 
   linearUi.dimension.addEventListener("change", function () {
     const dim = Number(linearUi.dimension.value);
