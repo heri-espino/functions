@@ -180,6 +180,21 @@
       </section>
     </section>
 
+    <section class="embedded-image-panel">
+      <div class="embedded-image-head">
+        <div><p class="panel-kicker">IMAGEN SOBRE FUNCIONES</p>
+          <h2>Deforma una imagen con la composición</h2>
+          <p>La composición actúa sobre la coordenada horizontal: (x,y) ↦ (F(x),y). Si F no es inyectiva, pueden superponerse franjas de la imagen.</p>
+        </div>
+        <label class="embedded-upload">Subir imagen <input id="function-image-upload" type="file" accept="image/*" /></label>
+      </div>
+      <div class="embedded-canvases">
+        <div><span>Antes</span><canvas id="function-image-before" width="500" height="320" aria-label="Imagen antes de la composición"></canvas></div>
+        <div><span>Después</span><canvas id="function-image-after" width="500" height="320" aria-label="Imagen después de la composición"></canvas></div>
+      </div>
+      <p id="function-image-status" class="hint">Comparte imagen con las otras pestañas. Sube una imagen para comenzar.</p>
+    </section>
+
     <section class="explanation">
       <article>
         <p class="panel-kicker">LECTURA GEOMÉTRICA</p>
@@ -291,6 +306,40 @@
             </article>
           </div>
         </section>
+      </section>
+
+      <section class="spectral-panel" aria-label="Descomposición espectral">
+        <div class="spectral-head">
+          <div><p class="panel-kicker">DESCOMPOSICIÓN EN EIGENVECTORES</p>
+            <h2>De A a sus componentes espectrales</h2>
+            <p>Descomponer, escalar en la eigenbase y reconstruir. Para matrices simétricas: A = QΛQᵀ.</p>
+          </div>
+          <label class="toggle-row"><input id="spectral-show" type="checkbox" checked /><span class="toggle-ui" aria-hidden="true"></span><span>Mostrar etapas</span></label>
+        </div>
+        <div id="spectral-content">
+          <div id="spectral-message" class="spectral-description">Calculando eigenvectores…</div>
+          <div class="spectral-navigation">
+            <button type="button" id="spectral-prev" class="secondary-button">← Anterior</button>
+            <input id="spectral-step" type="range" min="0" max="3" value="0" aria-label="Etapa espectral seleccionada" />
+            <button type="button" id="spectral-next" class="secondary-button">Siguiente →</button>
+          </div>
+          <div class="spectral-diagram-scroll"><svg id="spectral-svg" viewBox="0 0 1200 350" role="img" aria-label="Cuatro etapas de la descomposición espectral"></svg></div>
+          <div id="spectral-eigenvectors" class="spectral-values"></div>
+        </div>
+      </section>
+
+      <section class="embedded-image-panel">
+        <div class="embedded-image-head">
+          <div><p class="panel-kicker">IMAGEN BAJO UNA MATRIZ</p>
+            <h2>Aplica A a una imagen</h2>
+            <p>En R² la imagen se transforma en el plano; en R³ se interpreta como una superficie en el plano z = 0 y se proyecta isométricamente.</p></div>
+          <label class="embedded-upload">Subir imagen <input id="linear-image-upload" type="file" accept="image/*" /></label>
+        </div>
+        <div class="embedded-canvases">
+          <div><span>Antes</span><canvas id="linear-image-before" width="500" height="320" aria-label="Imagen antes de A"></canvas></div>
+          <div><span>Después</span><canvas id="linear-image-after" width="500" height="320" aria-label="Imagen después de A"></canvas></div>
+        </div>
+        <p id="linear-image-status" class="hint">Utiliza las entradas de la matriz actual. La imagen cargada se comparte con los otros modos.</p>
       </section>
 
       <section class="explanation">
@@ -432,5 +481,7 @@
 
   <script type="module" src="app.js"></script>
   <script type="module" src="image-warp.js"></script>
+  <script type="module" src="spectral.js"></script>
+  <script type="module" src="image-overlays.js"></script>
 </body>
 </html>
