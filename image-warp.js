@@ -485,6 +485,9 @@ function bindEvents() {
       controls.fileInfo.textContent = file.name + " · " + decoded.width + " × " + decoded.height +
         " px (el archivo no se envía a ningún servidor).";
       defaultPosition();
+      window.dispatchEvent(new CustomEvent("functionmapper:image-loaded", {
+        detail: { canvas: sourceCanvas, data: sourceData, name: sourceName },
+      }));
     } catch (error) {
       if (seq === loadSequence) {
         showError(error.message);
@@ -528,6 +531,15 @@ function bindEvents() {
     }, "image/png");
   });
   bindDrag();
+  window.addEventListener("functionmapper:image-loaded", (event) => {
+    const shared = event.detail;
+    if (!shared || shared.data === sourceData) return;
+    sourceCanvas = shared.canvas;
+    sourceData = shared.data;
+    sourceName = shared.name || "imagen";
+    controls.fileInfo.textContent = sourceName + " · imagen compartida entre modos";
+    defaultPosition();
+  });
   window.addEventListener("functionmapper:image-visible", requestRender);
 }
 
