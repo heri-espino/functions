@@ -30,6 +30,9 @@
       <button id="tab-linear" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="linear-mode" data-mode="linear">
         Transformaciones lineales
       </button>
+      <button id="tab-image" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="image-mode" data-mode="image">
+        Imagen / Warp
+      </button>
     </nav>
 
     <section id="functions-mode" class="mode-section" role="tabpanel" aria-labelledby="tab-functions">
@@ -305,8 +308,129 @@
         </div>
       </section>
     </section>
+
+    <section id="image-mode" class="mode-section hidden" role="tabpanel" aria-labelledby="tab-image">
+      <section class="workspace warp-workspace">
+        <aside class="controls" aria-label="Opciones de transformación de imágenes">
+          <section class="control-section">
+            <p class="section-kicker">IMAGEN DE ORIGEN</p>
+            <label class="field-label" for="warp-upload">Subir una imagen</label>
+            <input id="warp-upload" type="file" accept="image/*" />
+            <p id="warp-file-description" class="hint">JPEG, PNG, WebP y otros formatos admitidos por tu navegador. La imagen permanece en tu dispositivo.</p>
+            <div class="inline-actions">
+              <button type="button" class="secondary-button" id="warp-reset-position">Centrar imagen</button>
+              <button type="button" class="secondary-button" id="warp-fit-view">Ajustar vista</button>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <p class="section-kicker">POSICIÓN EN EL PLANO</p>
+            <p class="hint warp-field-hint">El rectángulo define las coordenadas de las esquinas de la imagen. También puedes arrastrarla en el panel «Antes».</p>
+            <div class="grid-two">
+              <div class="control-block compact"><label for="warp-image-xmin">x mín.</label><input id="warp-image-xmin" type="number" step="0.1" value="-1" /></div>
+              <div class="control-block compact"><label for="warp-image-xmax">x máx.</label><input id="warp-image-xmax" type="number" step="0.1" value="1" /></div>
+              <div class="control-block compact"><label for="warp-image-ymin">y mín.</label><input id="warp-image-ymin" type="number" step="0.1" value="-1" /></div>
+              <div class="control-block compact"><label for="warp-image-ymax">y máx.</label><input id="warp-image-ymax" type="number" step="0.1" value="1" /></div>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <p class="section-kicker">TRANSFORMACIÓN</p>
+            <div class="control-block">
+              <label for="warp-preset">Ejemplos</label>
+              <select id="warp-preset">
+                <option value="identity">Identidad</option>
+                <option value="rotate">Rotación 30°</option>
+                <option value="shear">Shear horizontal</option>
+                <option value="stretch">Estirar x, contraer y</option>
+                <option value="reflect">Reflexión en x</option>
+                <option value="logx">x′ = ln(x)</option>
+                <option value="expy">y′ = exp(y)</option>
+                <option value="both">x′ = ln(x), y′ = exp(y)</option>
+                <option value="custom">Personalizada</option>
+              </select>
+            </div>
+            <div class="control-block">
+              <label for="warp-kind">Tipo de transformación</label>
+              <select id="warp-kind">
+                <option value="linear">Lineal: p′ = Ap</option>
+                <option value="separable">No lineal por ejes: (φ(x), ψ(y))</option>
+              </select>
+            </div>
+
+            <div id="warp-linear-options">
+              <label class="field-label" for="warp-m11">Matriz A (2 × 2)</label>
+              <div class="warp-matrix-grid" aria-label="Matriz de transformación">
+                <input id="warp-m11" aria-label="A fila 1 columna 1" inputmode="text" value="1" />
+                <input id="warp-m12" aria-label="A fila 1 columna 2" inputmode="text" value="0" />
+                <input id="warp-m21" aria-label="A fila 2 columna 1" inputmode="text" value="0" />
+                <input id="warp-m22" aria-label="A fila 2 columna 2" inputmode="text" value="1" />
+              </div>
+              <p class="hint">Puedes usar números o expresiones como <code>cos(pi/6)</code>. El warp requiere una matriz invertible.</p>
+            </div>
+
+            <div id="warp-separable-options" class="hidden">
+              <div class="warp-formula-row">
+                <label for="warp-forward-x">x′ = φ(x)</label>
+                <input id="warp-forward-x" spellcheck="false" value="log(x)" />
+                <label for="warp-inverse-x">x = φ⁻¹(u)</label>
+                <input id="warp-inverse-x" spellcheck="false" value="exp(u)" />
+              </div>
+              <div class="warp-formula-row">
+                <label for="warp-forward-y">y′ = ψ(y)</label>
+                <input id="warp-forward-y" spellcheck="false" value="y" />
+                <label for="warp-inverse-y">y = ψ⁻¹(v)</label>
+                <input id="warp-inverse-y" spellcheck="false" value="v" />
+              </div>
+              <p class="hint">La transformación debe ser invertible en la región de la imagen. Se comprueban las inversas y el dominio.</p>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <p class="section-kicker">VISUALIZACIÓN</p>
+            <label class="toggle-row" for="warp-grid"><input id="warp-grid" type="checkbox" checked /><span class="toggle-ui" aria-hidden="true"></span><span>Ejes y cuadrícula</span></label>
+            <p class="hint">La ventana visible se comparte entre «Antes» y «Después».</p>
+            <div class="grid-two warp-window">
+              <div class="control-block compact"><label for="warp-view-xmin">Vista x mín.</label><input id="warp-view-xmin" type="number" step="0.2" value="-3" /></div>
+              <div class="control-block compact"><label for="warp-view-xmax">Vista x máx.</label><input id="warp-view-xmax" type="number" step="0.2" value="3" /></div>
+              <div class="control-block compact"><label for="warp-view-ymin">Vista y mín.</label><input id="warp-view-ymin" type="number" step="0.2" value="-2.2" /></div>
+              <div class="control-block compact"><label for="warp-view-ymax">Vista y máx.</label><input id="warp-view-ymax" type="number" step="0.2" value="2.2" /></div>
+            </div>
+          </section>
+          <div id="warp-error" class="error-box hidden" role="alert"></div>
+        </aside>
+
+        <section class="visual-panel" aria-label="Deformación de la imagen">
+          <div class="panel-head">
+            <div><p class="panel-kicker">IMAGEN COMO REGIÓN DEL PLANO</p><h2>Transforma cada píxel en coordenadas reales</h2></div>
+            <div id="warp-status" class="status" aria-live="polite">Selecciona una imagen</div>
+          </div>
+          <div class="warp-canvas-grid">
+            <div class="warp-canvas-panel">
+              <div class="warp-canvas-heading">Antes <span>Imagen en sus coordenadas</span></div>
+              <canvas id="warp-source" width="640" height="440" aria-label="Imagen original en el plano. Arrástrala para moverla.">Canvas no soportado.</canvas>
+            </div>
+            <div class="warp-canvas-panel">
+              <div class="warp-canvas-heading">Después <span>Imagen transformada T(x,y)</span></div>
+              <canvas id="warp-output" width="640" height="440" aria-label="Resultado de la transformación de la imagen.">Canvas no soportado.</canvas>
+            </div>
+          </div>
+          <div class="warp-action-row">
+            <span id="warp-summary" class="warp-summary">T(x,y) = (x,y)</span>
+            <button id="warp-save" class="secondary-button" type="button" disabled>Guardar PNG</button>
+          </div>
+        </section>
+      </section>
+      <section class="explanation">
+        <article><p class="panel-kicker">TRANSFORMACIONES DE IMÁGENES</p>
+          <h2>Coordenadas antes que píxeles</h2>
+          <p>La imagen ocupa un rectángulo del plano. Para cada píxel de salida calculamos su preimagen mediante T⁻¹ y muestreamos la imagen original con interpolación bilineal.</p></article>
+        <div class="formula-card"><span>Muestreo inverso</span><strong>I′(p′) = I(T⁻¹(p′))</strong></div>
+      </section>
+    </section>
   </main>
 
   <script type="module" src="app.js"></script>
+  <script type="module" src="image-warp.js"></script>
 </body>
 </html>
