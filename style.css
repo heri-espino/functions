@@ -785,3 +785,160 @@ input[type="range"] {
     width: 66px !important;
   }
 }
+
+/* Image warp mode */
+.warp-workspace { grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); }
+.warp-workspace .field-label {
+  display: block;
+  margin: 8px 0 7px;
+  color: #dce5f6;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.warp-workspace #warp-upload {
+  display: block;
+  width: 100%;
+  padding: 9px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--panel-3);
+  color: var(--text);
+}
+.warp-workspace #warp-upload::file-selector-button {
+  background: var(--panel-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  padding: 7px 10px;
+  color: var(--text);
+  margin-right: 10px;
+  cursor: pointer;
+}
+.warp-workspace .control-section .grid-two { margin-top: 11px; }
+.warp-field-hint { margin-bottom: 9px; }
+.warp-workspace .control-block { margin-bottom: 13px; }
+.warp-workspace .control-block.compact { margin-bottom: 0; }
+.warp-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 88px));
+  gap: 9px;
+  width: max-content;
+  max-width: 100%;
+  padding: 11px 19px;
+  margin-top: 8px;
+  border-radius: 10px;
+  position: relative;
+  background: var(--panel-3);
+}
+.warp-matrix-grid::before,
+.warp-matrix-grid::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 7px;
+  border-top: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+}
+.warp-matrix-grid::before { left: 6px; border-left: 1.5px solid var(--muted); }
+.warp-matrix-grid::after { right: 6px; border-right: 1.5px solid var(--muted); }
+.warp-matrix-grid input { text-align: center; font-family: "STIX Two Math", "Cambria Math", serif; }
+.warp-formula-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.warp-formula-row label {
+  color: #dce5f6;
+  font-size: 0.83rem;
+  font-family: "STIX Two Math", "Cambria Math", serif;
+}
+.warp-formula-row input {
+  font-family: "STIX Two Math", "Cambria Math", serif;
+  font-size: 1.12rem;
+}
+.warp-canvas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: 14px;
+  min-width: 0;
+}
+.warp-canvas-panel {
+  min-width: 0;
+  padding: 0 9px;
+}
+.warp-canvas-panel:first-child { border-right: 1px solid var(--line); }
+.warp-canvas-heading {
+  font-weight: 750;
+  font-size: 0.88rem;
+  margin: 0 0 8px;
+}
+.warp-canvas-heading span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-top: 3px;
+}
+.warp-canvas-panel canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 640 / 440;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+#warp-source { cursor: grab; touch-action: none; }
+#warp-source:active { cursor: grabbing; }
+.warp-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 13px 20px 17px;
+}
+.warp-summary {
+  color: var(--muted);
+  font-family: "STIX Two Math", "Cambria Math", serif;
+  font-size: 0.94rem;
+  overflow-wrap: anywhere;
+}
+.warp-action-row button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.warp-workspace .error-box { margin: 0 18px 18px; }
+.warp-window { padding-top: 2px; }
+@media (max-width: 1150px) {
+  .warp-canvas-grid { grid-template-columns: 1fr; gap: 18px; }
+  .warp-canvas-panel:first-child {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+  }
+}
+@media (max-width: 980px) {
+  .warp-workspace { grid-template-columns: 1fr; }
+  .warp-canvas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .warp-canvas-panel:first-child {
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+@media (max-width: 660px) {
+  .warp-canvas-grid { grid-template-columns: 1fr; }
+  .warp-canvas-panel:first-child {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+  }
+  .mode-switch { flex-wrap: wrap; }
+  .mode-tab { min-width: 110px; }
+}
