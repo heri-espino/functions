@@ -719,6 +719,17 @@ function render() {
     (clipped ? " · " + clipped + " fuera del xlim final" : "");
 
   updateMetrics(xs, stages, compiled, labels);
+  const signature = JSON.stringify({
+    expressions: functionsState.map(item => item.expression),
+    xmin: range.xmin,
+    xmax: range.xmax,
+  });
+  if (window.__functionmapperLastFunctionSignature !== signature) {
+    window.__functionmapperLastFunctionSignature = signature;
+    window.dispatchEvent(new CustomEvent("functionmapper:functions-change", {
+      detail: { expressions: functionsState.map(item => item.expression), xmin: range.xmin, xmax: range.xmax },
+    }));
+  }
 }
 
 function stopAnimation(reset) {
@@ -1805,6 +1816,10 @@ function renderLinear() {
   const tr = matrixTrace(A);
   const rank = matrixRank(A);
   const eigenpairs = realEigenpairs(A);
+
+  window.dispatchEvent(new CustomEvent("functionmapper:linear-change", {
+    detail: { A: A.map(row => row.slice()), eigenpairs, dimension: dim },
+  }));
 
   linearUi.title.textContent = "A : R" + dim + " → R" + dim;
   linearUi.det.textContent = "det(A) = " + formatNumber(det);
