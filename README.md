@@ -206,6 +206,84 @@ node --test tests/warp-core.test.mjs
 Tests cover matrix inversion, singular matrices, coordinate mapping,
 interpolation of opaque and transparent pixels, and viewport aspect ratio.
 
+## 4. Spectral decomposition and images across modes
+
+### Spectral decomposition
+
+Open **Transformaciones lineales** and activate **Mostrar etapas** in the
+spectral section. The visualization follows a reference vector and the
+coordinate grid through four explicit steps:
+
+1. Original coordinates `x`.
+2. Coordinates `z = P⁻¹x` in the eigenvector basis.
+3. Componentwise scaling `Λz`.
+4. Reconstruction `PΛz = Ax`.
+
+The selected step is highlighted, and the panel displays the real eigenvalues,
+a numerical eigenvector basis and the reconstruction residual.
+
+For symmetric matrices, the app uses an orthonormal eigenbasis computed
+with a Jacobi symmetric eigensolver:
+
+```text
+A = Q Λ Qᵀ,    QᵀQ = I.
+```
+
+For non-symmetric matrices that have enough independent real eigenvectors:
+
+```text
+A = P Λ P⁻¹.
+```
+
+If a real eigenbasis does not exist (e.g. a nontrivial planar rotation with
+complex eigenvalues, or a defective shear), the app explicitly says so; it
+does not pretend the matrix is diagonalizable over the reals. The eigenvector
+overlay in the main linear explorer remains separate.
+
+### Images in all three modes
+
+A single loaded image is shared between **Funciones**, **Transformaciones
+lineales**, and **Imagen / Warp**. You can upload it from any tab. Image
+placement is edited using the four coordinate bounds in **Imagen / Warp**.
+
+- **Funciones:** the scalar composition `F = g ∘ f` can act on either
+  coordinate, `(x,y) → (F(x), y)` or `(x,y) → (x, F(y))`. This uses narrow
+  forward-mapped texture strips, so non-injective functions such as `x²`
+  can be visualized with overlapping/folded source regions. Rendering is
+  approximate around fold points or discontinuities.
+- **Transformaciones lineales, R¹:** `x` is scaled by the current
+  `1×1` matrix while the image's y coordinate is unchanged.
+- **Transformaciones lineales, R²:** the image is transformed by the current
+  `2×2` matrix using an affine canvas texture map, including shear,
+  reflection and rotation.
+- **Transformaciones lineales, R³:** the image lies in the plane `z=0`
+  and the full `3×3` matrix transforms that plane in `R³`. Both the
+  original and transformed planes are drawn in an isometric 2D projection.
+
+The image remains a visual aid independent of the spectral decomposition:
+you can explore eigenvectors and the four spectral stages with no image
+uploaded at all.
+
+Mathematical details and known limits:
+
+- A singular linear map can collapse a whole image into a lower-dimensional
+  set; the visual affine overlay may become a line or point. The separate
+  inverse-warp canvas still rejects singular maps.
+- Matrices with complex eigenpairs may have no real spectral diagram of the
+  `PΛP⁻¹` type. The interface reports this explicitly.
+- For arbitrary scalar compositions the image overlay is a piecewise affine
+  approximation, not an exact differentiable inverse texture mapping.
+- Coordinate measurements are world-space, independent of the image's
+  source pixel dimensions.
+
+### Regression tests
+
+The pure math modules are tested with Node.js 22+:
+
+```bash
+node --test tests/*.test.mjs
+```
+
 ## Stack
 
 - HTML
@@ -255,9 +333,13 @@ functions/
 ├── style.css
 ├── app.js
 ├── image-warp.js
+├── image-overlays.js
+├── spectral.js
+├── spectral-core.js
 ├── warp-core.js
 ├── tests/
-│   └── warp-core.test.mjs
+│   ├── warp-core.test.mjs
+│   └── spectral-core.test.mjs
 ├── .nojekyll
 └── README.md
 ```
