@@ -173,11 +173,13 @@ function renderFunctionImage(){
         fnError||"Cargando evaluador matemático…";
     return;
   }
+  const axis=$("function-image-axis").value;
+  const min=axis==="x"?bounds.xmin:bounds.ymin;
+  const max=axis==="x"?bounds.xmax:bounds.ymax;
   const sampled=[];
   const N=160;
   for(let i=0;i<=N;i++){
-    const x=bounds.xmin+(bounds.xmax-bounds.xmin)*i/N;
-    sampled.push(composedScalar(x));
+    sampled.push(composedScalar(min+(max-min)*i/N));
   }
   const finite=sampled.filter(Number.isFinite);
   if(!finite.length){
@@ -185,11 +187,14 @@ function renderFunctionImage(){
     c.status.textContent="La composición no tiene imágenes reales finitas sobre este intervalo.";
     return;
   }
-  const sourceView={xmin:bounds.xmin,xmax:bounds.xmax,ymin:bounds.ymin,ymax:bounds.ymax};
   const afterMin=Math.min(...finite),afterMax=Math.max(...finite);
-  const first={xmin:Math.min(bounds.xmin,afterMin),xmax:Math.max(bounds.xmax,afterMax),
-    ymin:bounds.ymin,ymax:bounds.ymax};
+  const first=axis==="x"?
+    {xmin:Math.min(bounds.xmin,afterMin),xmax:Math.max(bounds.xmax,afterMax),
+      ymin:bounds.ymin,ymax:bounds.ymax}:
+    {xmin:bounds.xmin,xmax:bounds.xmax,
+      ymin:Math.min(bounds.ymin,afterMin),ymax:Math.max(bounds.ymax,afterMax)};
   if(first.xmax-first.xmin<0.01){first.xmin-=0.1;first.xmax+=0.1;}
+  if(first.ymax-first.ymin<0.01){first.ymin-=0.1;first.ymax+=0.1;}
   const view=fitBounds([first],c.before.width/c.before.height,0.17);
   setupCanvas(a,view);setupCanvas(b,view);
   const topLeft=pixelAtWorld(bounds.xmin,bounds.ymax,a.canvas.width,a.canvas.height,view);
@@ -198,22 +203,34 @@ function renderFunctionImage(){
 
   // General non-injective maps require a forward mesh, not a global inverse.
   // Paint narrow source strips; folded branches can overlap at the destination.
-  const strips=Math.min(texture.width,640);
-  const slice=texture.width/strips;
+  const strips=Math.min(axis==="x"?texture.width:texture.height,640);
+  const slice=(axis==="x"?texture.width:texture.height)/strips;
   for(let i=0;i<strips;i++){
-    const x0=bounds.xmin+(bounds.xmax-bounds.xmin)*i/strips;
-    const x1=bounds.xmin+(bounds.xmax-bounds.xmin)*(i+1)/strips;
-    const u0=composedScalar(x0),u1=composedScalar(x1);
+    const v0=min+(max-min)*(axis==="x"?i/strips:1-i/strips);
+    const v1=min+(max-min)*(axis==="x"?(i+1)/strips:1-(i+1)/strips);
+    const u0=composedScalar(v0),u1=composedScalar(v1);
     if(!Number.isFinite(u0)||!Number.isFinite(u1)||Math.abs(u1-u0)>1e5)continue;
-    const p0=pixelAtWorld(u0,bounds.ymax,b.canvas.width,b.canvas.height,view);
-    const p1=pixelAtWorld(u1,bounds.ymin,b.canvas.width,b.canvas.height,view);
-    const dx=p1[0]-p0[0],dy=p1[1]-p0[1];
-    if(Math.abs(dx)<0.05)continue;
-    b.save();
-    b.setTransform(dx/slice,0,0,dy/texture.height,p0[0],p0[1]);
-    b.imageSmoothingEnabled=true;
-    b.drawImage(texture,i*slice,0,slice,texture.height,0,0,slice,texture.height);
-    b.restore();
+    if(axis==="x"){
+      const p0=pixelAtWorld(u0,bounds.ymax,b.canvas.width,b.canvas.height,view);
+      const p1=pixelAtWorld(u1,bounds.ymin,b.canvas.width,b.canvas.height,view);
+      const dx=p1[0]-p0[0],dy=p1[1]-p0[1];
+      if(Math.abs(dx)<0.05)continue;
+      b.save();
+      b.setTransform(dx/slice,0,0,dy/texture.height,p0[0],p0[1]);
+      b.imageSmoothingEnabled=true;
+      b.drawImage(texture,i*slice,0,slice,texture.height,0,0,slice,texture.height);
+      b.restore();
+    }else{
+      const p0=pixelAtWorld(bounds.xmin,u0,b.canvas.width,b.canvas.height,view);
+      const p1=pixelAtWorld(bounds.xmax,u1,b.canvas.width,b.canvas.height,view);
+      const dx=p1[0]-p0[0],dy=p1[1]-p0[1];
+      if(Math.abs(dy)<0.05)continue;
+      b.save();
+      b.setTransform(dx/texture.width,0,0,dy/slice,p0[0],p0[1]);
+      b.imageSmoothingEnabled=true;
+      b.drawImage(texture,0,i*slice,texture.width,slice,0,0,texture.width,slice);
+      b.restore();
+    }
   }
   let turns=0,sign=0;
   for(let i=1;i<sampled.length;i++){
@@ -225,7 +242,7 @@ function renderFunctionImage(){
   }
   c.status.textContent=turns?
     "La composición tiene pliegues: hay "+turns+" cambio(s) de monotonía y regiones superpuestas.":
-    "La imagen sigue x ↦ f(x) ↦ g(f(x))…; y queda fija.";
+    "Se transforma "+axis+" mediante F; la otra coordenada permanece fija.";
 }
 function schedule(){
   if(drawPending)return;
@@ -273,6 +290,7 @@ window.addEventListener("functionmapper:functions-change",()=>{
   refreshCompiledFunctions();schedule();
 });
 document.getElementById("warp-grid").addEventListener("change",schedule);
+$("function-image-axis").addEventListener("change",schedule);
 for(const id of ["warp-image-xmin","warp-image-xmax","warp-image-ymin","warp-image-ymax"]){
   $(id).addEventListener("input",schedule);
 }
