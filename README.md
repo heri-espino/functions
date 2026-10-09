@@ -117,6 +117,95 @@ Av = λv
 
 so the direction is invariant under the transformation. A generic planar rotation correctly reports that it has no real eigenvectors, whereas a three-dimensional rotation shows its real rotation axis when applicable.
 
+
+## 3. Image / Warp
+
+The third tab lets you load a local image and treat it as a rectangle in the
+Cartesian plane. The image stays in the browser; nothing is uploaded to a
+server.
+
+### Placement
+
+Provide the mathematical rectangle occupied by the image:
+
+\[
+[x_{\min},x_{\max}]\times[y_{\min},y_{\max}].
+\]
+
+You can change all four coordinates manually, or drag the image in the
+**Before** panel. **Center image** restores its placement, preserving the
+image's aspect ratio. **Fit view** shows both the original and transformed
+regions at a common scale.
+
+The **Before** and **After** canvases use the same world-coordinate window,
+whose limits can also be edited manually.
+
+### Warp types
+
+**Linear:** enter any invertible real \(2\times2\) matrix \(A\).
+
+\[
+T(x,y)=A(x,y)^T.
+\]
+
+Presets include identity, 30-degree rotation, shear, anisotropic scaling,
+and reflection. Matrix expressions such as \`cos(pi/6)\` are supported.
+
+**Nonlinear, separable by axis:** enter forward functions and their inverses:
+
+\[
+x'=\phi(x),\qquad y'=\psi(y),\qquad
+x=\phi^{-1}(u),\qquad y=\psi^{-1}(v).
+\]
+
+Built-in examples include \(x'=\ln(x)\), \(y'=\exp(y)\), and both together.
+The \(\ln(x)\) preset automatically moves the image into \(x>0\) if needed.
+Custom functions must be invertible on the image's coordinate rectangle.
+The app samples the interval to detect obvious domain or inverse mismatches;
+this is a **numerical check**, not a symbolic proof of invertibility.
+
+### Rendering
+
+For each destination pixel \(p'\), the renderer computes \(T^{-1}(p')\),
+converts that world coordinate back into the source image, and samples it
+with **alpha-aware bilinear interpolation**:
+
+\[
+I_{\mathrm{out}}(p')=I_{\mathrm{source}}(T^{-1}(p')).
+\]
+
+This avoids empty holes from forward splatting. For separable maps, the
+inverse is evaluated once per column and row, reducing formula evaluations
+from \(O(WH)\) to \(O(W+H)\), where \(W,H\) are canvas dimensions.
+
+- Source images are downsampled to a maximum side of 2,048 pixels to limit
+  browser memory consumption.
+- The preview and exported PNG have a fixed \(640\times440\) canvas resolution.
+- Files over 25 MB are rejected.
+- Singular matrices cannot be rendered by inverse mapping.
+- Complex/non-finite values or incompatible inverses are reported as errors.
+- The visual PNG export includes the coordinate grid when it is enabled.
+- All processing is client-side; no extra framework or backend is required.
+
+### How to try it
+
+1. Open **Imagen / Warp**, upload any PNG/JPEG/WebP image.
+2. Choose **Rotación 30°**, **Shear horizontal**, or **x′ = ln(x)**.
+3. Drag the image in the **Before** panel or edit its coordinate rectangle.
+4. Click **Ajustar vista** to compare the original and transformed image.
+5. Edit individual matrix cells or formulas and save the result with **Guardar PNG**.
+
+## Tests
+
+The math core is independent of the browser. With Node.js 22 or later, run:
+
+\`\`\`bash
+node --test tests/warp-core.test.mjs
+\`\`\`
+
+Tests cover matrix inversion, singular matrices, coordinate mapping,
+interpolation of opaque and transparent pixels, and viewport aspect ratio.
+
 ## Stack
 
 - HTML
@@ -165,6 +254,10 @@ functions/
 ├── index.html
 ├── style.css
 ├── app.js
+├── image-warp.js
+├── warp-core.js
+├── tests/
+│   └── warp-core.test.mjs
 ├── .nojekyll
 └── README.md
 ```
