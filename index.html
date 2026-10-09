@@ -184,9 +184,17 @@
       <div class="embedded-image-head">
         <div><p class="panel-kicker">IMAGEN SOBRE FUNCIONES</p>
           <h2>Deforma una imagen con la composición</h2>
-          <p>La composición actúa sobre la coordenada horizontal: (x,y) ↦ (F(x),y). Si F no es inyectiva, pueden superponerse franjas de la imagen.</p>
+          <p>Puedes aplicar la composición al eje x o al eje y. Si F no es inyectiva, diferentes regiones de la imagen pueden superponerse.</p>
         </div>
-        <label class="embedded-upload">Subir imagen <input id="function-image-upload" type="file" accept="image/*" /></label>
+        <div class="embedded-image-actions">
+          <label>Transformar eje
+            <select id="function-image-axis" aria-label="Eje al que se aplica la composición">
+              <option value="x">x → F(x)</option>
+              <option value="y">y → F(y)</option>
+            </select>
+          </label>
+          <label class="embedded-upload">Subir imagen <input id="function-image-upload" type="file" accept="image/*" /></label>
+        </div>
       </div>
       <div class="embedded-canvases">
         <div><span>Antes</span><canvas id="function-image-before" width="500" height="320" aria-label="Imagen antes de la composición"></canvas></div>
