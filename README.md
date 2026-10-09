@@ -149,7 +149,7 @@ T(x,y)=A(x,y)^T.
 \]
 
 Presets include identity, 30-degree rotation, shear, anisotropic scaling,
-and reflection. Matrix expressions such as \`cos(pi/6)\` are supported.
+and reflection. Matrix expressions such as `cos(pi/6)` are supported.
 
 **Nonlinear, separable by axis:** enter forward functions and their inverses:
 
@@ -199,9 +199,9 @@ from \(O(WH)\) to \(O(W+H)\), where \(W,H\) are canvas dimensions.
 
 The math core is independent of the browser. With Node.js 22 or later, run:
 
-\`\`\`bash
+```bash
 node --test tests/warp-core.test.mjs
-\`\`\`
+```
 
 Tests cover matrix inversion, singular matrices, coordinate mapping,
 interpolation of opaque and transparent pixels, and viewport aspect ratio.
