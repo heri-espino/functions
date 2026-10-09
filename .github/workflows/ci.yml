@@ -1,0 +1,28 @@
+name: Static app checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check app.js
+          node --check image-warp.js
+          node --check image-overlays.js
+          node --check spectral.js
+          node --check spectral-core.js
+          node --check warp-core.js
+      - name: Math regression tests
+        run: node --test tests/*.test.mjs
